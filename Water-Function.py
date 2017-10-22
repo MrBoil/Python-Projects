@@ -87,18 +87,22 @@ class Example(QMainWindow):
         min_value = QLineEdit(self)
         min_value.move(50, 50)
         min_value.textChanged[str].connect(self.minChanged)
+        min_value.setText("0")
 
         max_value = QLineEdit(self)
         max_value.move(50, 100)
         max_value.textChanged[str].connect(self.maxChanged)
+        max_value.setText("100")
 
         interval = QLineEdit(self)
         interval.move(50, 150)
         interval.textChanged[str].connect(self.intervalChanged)
+        interval.setText("1")
 
         interations = QLineEdit(self)
         interations.move(50, 200)
         interations.textChanged[str].connect(self.iterationsChanged)
+        interations.setText("10000")
 
     def minChanged(self, text):
         try:
