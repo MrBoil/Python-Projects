@@ -1,5 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication, QLineEdit, QLabel
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication, QLineEdit, QLabel, QSizePolicy
+
 
 class Water:
 
@@ -56,13 +59,16 @@ class Example(QMainWindow):
     def initUI(self):
 
         runbtn = QPushButton("Run!", self)
-        runbtn.move(90, 250)
+        runbtn.move(45, 250)
         runbtn.clicked.connect(self.runButtonClicked)
+
+        self.m = PlotCanvas(self, width=7, height=6)
+        self.m.move(200, 10)
 
         self.initQLables()
         self.initQLines()
 
-        self.setGeometry(350, 350, 290, 350)
+        self.setGeometry(350, 350, 5, 320)
         self.setWindowTitle('Spreading')
         self.show()
 
@@ -78,10 +84,9 @@ class Example(QMainWindow):
 
         itrlbl = QLabel("Number of iter.:", self)
         itrlbl.move(50, 175)
-        #itrlbl.adjustSize()
 
         self.compl = QLabel("Waiting :)", self)
-        self.compl.move(110, 300)
+        self.compl.move(50, 275)
 
     def initQLines(self):
         min_value = QLineEdit(self)
@@ -131,8 +136,32 @@ class Example(QMainWindow):
     def runButtonClicked(self):
         self.compl.setText("Computing")
 
-        self.w.water_spreading()
+        plt_ar = self.w.water_spreading()
+        self.m.plot(plt_ar)
+
         self.compl.setText("Done!")
+
+class PlotCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                                   QSizePolicy.Expanding,
+                                   QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.axes.set_ylim([0, 1])
+
+    def plot(self, data):
+        self.axes.clear()
+        ax = self.figure.add_subplot(1,1,1)
+        ax.plot(data)
+        ax.set_title('Smth spreading')
+        self.axes.set_ylim([-0.1, 1.1])
+        self.draw()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
